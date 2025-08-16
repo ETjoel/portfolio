@@ -1,10 +1,8 @@
-
-
 class Project {
   final String id;
   final String title;
   final String description;
-  final String imageUrl;
+  final List<String> images;
   final List<String> technologies;
   final String? githubLink;
 
@@ -12,7 +10,7 @@ class Project {
     required this.id,
     required this.title,
     required this.description,
-    required this.imageUrl,
+    required this.images,
     required this.technologies,
     this.githubLink,
   });

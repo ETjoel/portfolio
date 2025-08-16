@@ -1,11 +1,18 @@
-
 import 'package:flutter/material.dart';
 
 class ThemedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool showBackButton;
+  final List<Widget>? actions;
+  final PreferredSizeWidget? bottom;
 
-  const ThemedAppBar({super.key, required this.title, this.showBackButton = false});
+  const ThemedAppBar({
+    super.key,
+    required this.title,
+    this.showBackButton = false,
+    this.actions,
+    this.bottom,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +20,22 @@ class ThemedAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       elevation: 8,
       shadowColor: Colors.black.withOpacity(0.5),
-      title: Text(
-        title,
-        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
-      ),
+      // title: Text(
+      //   title,
+      //   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+      //     color: Theme.of(context).colorScheme.onPrimary,
+      //   ),
+      // ),
       automaticallyImplyLeading: showBackButton,
       iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+      actions: actions,
+      bottom: bottom,
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  @override
+  Size get preferredSize => Size.fromHeight(
+        kToolbarHeight + (bottom?.preferredSize.height ?? 0),
+      );
 }
