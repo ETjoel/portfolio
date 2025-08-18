@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'controllers/auth_controller.dart';
-import 'views/main_page.dart';
-import 'views/project_detail_page.dart';
-import 'views/admin_page.dart';
-import 'views/login_page.dart';
-import 'views/edit_project_page.dart';
+import '../controllers/auth_controller.dart';
+import '../views/main_page.dart';
+import '../views/project_detail_page.dart';
+import '../views/admin_page.dart';
+import '../views/login_page.dart';
+import '../views/edit_project_page.dart';
 
 class RouteConstants {
   static const String home = '/';

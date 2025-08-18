@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:portfolio/core/routes.dart';
 import 'package:provider/provider.dart';
 import '../controllers/project_controller.dart';
 import '../models/project.dart';
-import '../routes.dart';
 import '../widgets/themed_app_bar.dart';
 
 class AdminPage extends StatefulWidget {
@@ -23,6 +23,15 @@ class _AdminPageState extends State<AdminPage> {
   List<Uint8List> _pickedImages = [];
   final _technologiesController = TextEditingController();
   final _githubLinkController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch projects when the page initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProjectController>(context, listen: false).fetchProjects();
+    });
+  }
 
   @override
   void dispose() {
@@ -97,198 +106,171 @@ class _AdminPageState extends State<AdminPage> {
             ],
           ),
         ),
-        // backgroundColor: Colors.black,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: TabBarView(
-            children: [
-              _buildCreateForm(),
-              _buildManageList(projects),
-            ],
-          ),
+        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+        body: TabBarView(
+          children: [
+            _buildCreateForm(),
+            _buildManageList(projects),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildCreateForm() {
-    return Stack(
-      children: [
-        Container(
-          // decoration: BoxDecoration(
-          //   image: DecorationImage(
-          //     image: const AssetImage(
-          //         'assets/images/wallpaperflare.com_wallpaper.jpg'),
-          //     fit: BoxFit.cover,
-          //     colorFilter: ColorFilter.mode(
-          //       Colors.black.withOpacity(0.2),
-          //       BlendMode.dstATop,
-          //     ),
-          //   ),
-          // ),
-        ),
-        Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Container(
-                padding: const EdgeInsets.all(24.0),
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  // border: Border.all(
-                  //     color: Theme.of(context)
-                  //         .colorScheme
-                  //         .primary
-                  //         .withOpacity(0.2),
-                  //     width: 2),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black.withOpacity(0.3),
-                  //     blurRadius: 10,
-                  //     offset: const Offset(0, 5),
-                  //   ),
-                  // ],
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text('Chronicle a New Discovery',
-                          style: Theme.of(context).textTheme.headlineMedium),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                            labelText: 'Treasure\'s Name (Title)'),
-                        validator: (value) => value!.isEmpty
-                            ? 'Every treasure needs a name!'
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                            labelText:
-                                'The Tale of This Treasure (Description)'),
-                        maxLines: 5,
-                        validator: (value) => value!.isEmpty
-                            ? 'A treasure\'s tale must be told!'
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.image),
-                        label: const Text('Pick Images'),
-                        onPressed: _pickImages,
-                      ),
-                      const SizedBox(height: 12),
-                      if (_pickedImages.isNotEmpty)
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: List.generate(
-                              _pickedImages.length,
-                              (idx) => Stack(
-                                    alignment: Alignment.topRight,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8),
-                                        child: Image.memory(
-                                          _pickedImages[idx],
-                                          width: 100,
-                                          height: 80,
-                                          fit: BoxFit.cover,
-                                        ),
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32.0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Card(
+            elevation: 5,
+            shadowColor: Colors.green.shade800,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(26.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('Chronicle a New Discovery',
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                          labelText: 'Treasure\'s Name (Title)'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Every treasure needs a name!' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(
+                          labelText:
+                              'The Tale of This Treasure (Description)'),
+                      maxLines: 5,
+                      validator: (value) => value!.isEmpty
+                          ? 'A treasure\'s tale must be told!'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.image),
+                      label: const Text('Pick Images'),
+                      onPressed: _pickImages,
+                    ),
+                    const SizedBox(height: 12),
+                    if (_pickedImages.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: List.generate(
+                            _pickedImages.length,
+                            (idx) => Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.memory(
+                                        _pickedImages[idx],
+                                        width: 100,
+                                        height: 80,
+                                        fit: BoxFit.cover,
                                       ),
-                                      Positioned(
-                                        top: 2,
-                                        right: 2,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _pickedImages.removeAt(idx);
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.black
-                                                  .withOpacity(0.6),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(Icons.close,
-                                                color: Colors.white,
-                                                size: 18),
+                                    ),
+                                    Positioned(
+                                      top: 2,
+                                      right: 2,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _pickedImages.removeAt(idx);
+                                          });
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.black.withOpacity(0.6),
+                                            shape: BoxShape.circle,
                                           ),
+                                          child: const Icon(Icons.close,
+                                              color: Colors.white, size: 18),
                                         ),
                                       ),
-                                    ],
-                                  )),
-                        ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _technologiesController,
-                        decoration: const InputDecoration(
-                            labelText:
-                                'Ancient Runes (Technologies, comma-separated)'),
-                        validator: (value) => value!.isEmpty
-                            ? 'What ancient runes were used?'
-                            : null,
+                                    ),
+                                  ],
+                                )),
                       ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _githubLinkController,
-                        decoration: const InputDecoration(
-                            labelText:
-                                'Secret Chart (GitHub Link, optional)'),
-                      ),
-                      const SizedBox(height: 32),
-                      ElevatedButton(
-                        onPressed: _submitForm,
-                        child: const Text('Add to the Hoard'),
-                      ),
-                    ],
-                  ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _technologiesController,
+                      decoration: const InputDecoration(
+                          labelText:
+                              'Ancient Runes (Technologies, comma-separated)'),
+                      validator: (value) => value!.isEmpty
+                          ? 'What ancient runes were used?'
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _githubLinkController,
+                      decoration: const InputDecoration(
+                          labelText: 'Secret Chart (GitHub Link, optional)'),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Add to the Hoard'),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildManageList(List<Project> projects) {
     return Center(
-      
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ConstrainedBox(
-          
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: ListView.separated(
-            itemCount: projects.length,
-            itemBuilder: (context, index) {
-              final project = projects[index];
-              return _HoverListTile(
-                title: project.title,
-                onEdit: () {
-                  context.goNamed(
-                    RouteConstants.editProject,
-                    pathParameters: {'id': project.id},
-                  );
-                },
-                onDelete: () {
-                  Provider.of<ProjectController>(context, listen: false)
-                      .deleteProject(project.id);
-                },
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 16,),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20.0),
+        child: Card(
+          elevation: 5,
+          shadowColor: Colors.green.shade800,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(26.0),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: projects.length,
+              itemBuilder: (context, index) {
+                final project = projects[index];
+                return _HoverListTile(
+                  title: project.title,
+                  onEdit: () {
+                    context.goNamed(
+                      RouteConstants.editProject,
+                      pathParameters: {'id': project.id},
+                    );
+                  },
+                  onDelete: () {
+                    Provider.of<ProjectController>(context, listen: false)
+                        .deleteProject(project.id);
+                  },
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(
+                height: 16,
+              ),
+            ),
           ),
         ),
       ),
@@ -331,7 +313,7 @@ class _HoverListTileState extends State<_HoverListTile> {
           ),
         child: ListTile(
           title:
-              Text(widget.title, style: const TextStyle(color: Colors.white)),
+              Text(widget.title, style: Theme.of(context).textTheme.bodyMedium),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

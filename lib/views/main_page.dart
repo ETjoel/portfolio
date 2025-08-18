@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:portfolio/routes.dart';
+import 'package:portfolio/core/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +23,15 @@ class _MainPageState extends State<MainPage> {
   final GlobalKey _experienceKey = GlobalKey();
   // Track selected nav index
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch projects when the page initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProjectController>(context, listen: false).fetchProjects();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

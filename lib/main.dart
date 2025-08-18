@@ -1,14 +1,35 @@
+import 'package:dotenv/dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:portfolio/routes.dart';
+import 'package:portfolio/core/constants.dart';
+import 'package:portfolio/core/routes.dart';
+import 'package:portfolio/services/supabase_service.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'controllers/project_controller.dart';
 import 'controllers/auth_controller.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  DotEnv().load();
+  await initializeSupabase();
   runApp(const MyApp());
 }
+
+Future<void> initializeSupabase () async {
+  try {
+  final supabaseUrl = Constants.supabaseUrl;
+  final supabaseKey = DotEnv().getOrElse('SUPABASE_KEY', () => '');
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseKey);
+
+  } catch (e) {
+    print('Error initializing Supabase: $e');
+  }
+ 
+}
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -19,13 +40,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late final AuthController _authController;
+  late final ProjectController _projectController;
   late final GoRouter _router;
 
   @override
   void initState() {
     super.initState();
+    final supabaseKey = DotEnv().getOrElse('SUPABASE_KEY', () => ''); 
+    final supabaseService = SupabaseService(supabaseKey: supabaseKey);
     _authController = AuthController();
     _router = createRouter(_authController);
+    _projectController = ProjectController(supabaseService: supabaseService );
   }
 
   @override
@@ -123,7 +148,7 @@ class _MyAppState extends State<MyApp> {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.7),
+        // fillColor: Colors.white.withOpacity(0.7),
         hintStyle:
             GoogleFonts.merriweather(color: deepOceanBlue.withOpacity(0.6)),
         border: OutlineInputBorder(
@@ -157,7 +182,7 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: _authController),
-        ChangeNotifierProvider(create: (_) => ProjectController()),
+        ChangeNotifierProvider(create: (_) => _projectController..fetchProjects()),
       ],
       child: MaterialApp.router(
         title: "Eyuel's Portfolio",
@@ -168,3 +193,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio/services/supabase_service.dart';
 import '../models/project.dart';
 
 class ProjectController with ChangeNotifier {
+  final SupabaseService supabaseService;
+  ProjectController({required this.supabaseService});
+
   final List<Project> _projects = [
     Project(
       id: '1',
@@ -42,7 +46,16 @@ class ProjectController with ChangeNotifier {
     ),
   ];
 
+  bool _isCreatingProjectLoading = false;
+  bool _isfetchingProjects = false;
+  bool _showError = false;
+  String _errorMessage = '';
+
   List<Project> get projects => _projects;
+  bool get isCreatingProjectLoading => _isCreatingProjectLoading;
+  bool get isfetchingProjects => _isfetchingProjects;
+  bool get showError => _showError;
+  String get errorMessage => _errorMessage;
 
   Project? getProjectById(String id) {
     try {
@@ -52,29 +65,75 @@ class ProjectController with ChangeNotifier {
     }
   }
 
-  void addProject(Project project) {
-    final newProject = Project(
-      id: (_projects.length + 1).toString(),
-      title: project.title,
-      description: project.description,
-      images: project.images,
-      technologies: project.technologies,
-      githubLink: project.githubLink,
-    );
-    _projects.add(newProject);
+  void updateIsCreatingProjectLoading(bool value) {
+    _isCreatingProjectLoading = value;
     notifyListeners();
   }
 
-  void updateProject(Project project) {
-    final index = _projects.indexWhere((p) => p.id == project.id);
-    if (index != -1) {
-      _projects[index] = project;
-      notifyListeners();
+  void updateIsfetchingProjects(bool value) {
+    _isfetchingProjects = value;
+    notifyListeners();
+  }
+  void updateShowError(bool value) {
+    _showError = value;
+    notifyListeners();
+  }
+  void updateErrorMessage(String value) {
+    _errorMessage = value;
+    notifyListeners();
+  }
+
+  void fetchProjects() async {
+    updateIsfetchingProjects(true);
+    try {
+      final projects = await supabaseService.fetchProjects();
+      _projects.clear();
+      _projects.addAll(projects);
+    } catch (e) {
+      updateShowError(true);
+      updateErrorMessage('Error fetching projects: $e');
+    }
+    updateIsfetchingProjects(false);
+    notifyListeners();
+  }
+
+
+
+  void updateProject(Project project) async {
+    try {
+      await supabaseService.editProject(project);
+      final index = _projects.indexWhere((p) => p.id == project.id);
+      if (index != -1) {
+        _projects[index] = project;
+        notifyListeners(); // Notify listeners after updating the local list
+      }
+    } catch (e) {
+      updateShowError(true);
+      updateErrorMessage('Error updating project: $e');
     }
   }
 
-  void deleteProject(String projectId) {
-    _projects.removeWhere((p) => p.id == projectId);
+  void deleteProject(String projectId) async {
+    try {
+      await supabaseService.deleteProject(projectId);
+      _projects.removeWhere((p) => p.id == projectId);
+    } catch (e) {
+      updateShowError(true);
+      updateErrorMessage('Error deleting project: $e');
+    }
     notifyListeners();
   }
+
+  void createProject(Project project) async {
+    updateIsCreatingProjectLoading(true);
+    try {
+      await supabaseService.createProject(project);
+      fetchProjects();
+    } catch (e) {
+      updateShowError(true);
+      updateErrorMessage('Error creating project: $e');
+    }
+    updateIsCreatingProjectLoading(false);
+  }
+
 }

@@ -17,6 +17,7 @@ class _ExperienceTimelineState extends State<ExperienceTimeline> {
     super.initState();
     _experiences = [
       Experience(
+        id: '1',
         company: 'Zulu Tech',
         position: 'Flutter and Flutter Flow Expert',
         period: 'Oct 2024 – Present',
@@ -29,6 +30,7 @@ class _ExperienceTimelineState extends State<ExperienceTimeline> {
         logoAsset: 'assets/images/zulu_tech_logo.png', // Placeholder
       ),
       Experience(
+        id: '2',
         company: 'Hex Labs',
         position: 'Intern Flutter Developer',
         period: 'Nov 2023 – Feb 2024',
