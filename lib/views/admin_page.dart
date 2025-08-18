@@ -97,7 +97,7 @@ class _AdminPageState extends State<AdminPage> {
             ],
           ),
         ),
-        backgroundColor: Colors.black,
+        // backgroundColor: Colors.black,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: TabBarView(
@@ -115,17 +115,17 @@ class _AdminPageState extends State<AdminPage> {
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: const AssetImage(
-                  'assets/images/wallpaperflare.com_wallpaper.jpg'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.2),
-                BlendMode.dstATop,
-              ),
-            ),
-          ),
+          // decoration: BoxDecoration(
+          //   image: DecorationImage(
+          //     image: const AssetImage(
+          //         'assets/images/wallpaperflare.com_wallpaper.jpg'),
+          //     fit: BoxFit.cover,
+          //     colorFilter: ColorFilter.mode(
+          //       Colors.black.withOpacity(0.2),
+          //       BlendMode.dstATop,
+          //     ),
+          //   ),
+          // ),
         ),
         Center(
           child: SingleChildScrollView(
@@ -138,19 +138,19 @@ class _AdminPageState extends State<AdminPage> {
                   color:
                       Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.2),
-                      width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
+                  // border: Border.all(
+                  //     color: Theme.of(context)
+                  //         .colorScheme
+                  //         .primary
+                  //         .withOpacity(0.2),
+                  //     width: 2),
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     color: Colors.black.withOpacity(0.3),
+                  //     blurRadius: 10,
+                  //     offset: const Offset(0, 5),
+                  //   ),
+                  // ],
                 ),
                 child: Form(
                   key: _formKey,
